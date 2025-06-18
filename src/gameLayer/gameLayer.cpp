@@ -27,10 +27,8 @@ constexpr float hitCirclesSize = 250.f;
 constexpr float hitCirclesOffsetInit = 0.65f; // the initial distance form the left for the hit circles
 constexpr float hitCirclesOffset = 0.08f; // the distance between the hit circles
 
-gl2d::Texture circleHit;
-gl2d::Texture circleNoHit;
-gl2d::Texture targetCircles;
-gl2d::TextureAtlasPadding hitCirclesAtlas;
+gl2d::Texture targetCirclesTexture;
+gl2d::TextureAtlasPadding targetCirclesAtlas;
 
 gl2d::Renderer2D renderer;
 
@@ -43,10 +41,8 @@ bool initGame()
 	//loading the saved data. Loading an entire structure like this makes savind game data very easy.
 	platform::readEntireFile(RESOURCES_PATH "gameData.data", &gameData, sizeof(GameData));
 
-	targetCircles.loadFromFileWithPixelPadding(RESOURCES_PATH "game resc/stiched/hit circle-stitched.png", 500, false);
-	circleHit.loadFromFile(RESOURCES_PATH "game resc/circleHit.png", false);
-	circleNoHit.loadFromFile(RESOURCES_PATH "game resc/circleNoHit.png", false);
-	hitCirclesAtlas = gl2d::TextureAtlasPadding(2, 1,targetCircles.GetSize().x, targetCircles.GetSize().y);
+	targetCirclesTexture.loadFromFile(RESOURCES_PATH "game resc/stiched/hit circle-stitched.png");
+	targetCirclesAtlas = gl2d::TextureAtlasPadding(2, 1,targetCirclesTexture.GetSize().x, targetCirclesTexture.GetSize().y);
 
 	platform::log("Init");
 
@@ -76,8 +72,8 @@ bool gameLogic(float deltaTime, platform::Input &input)
 	glm::vec4 inputs = {
 		(input.isButtonHeld(platform::Button::Left) | input.isButtonHeld(platform::Button::D)) ? 1.0f : 0.0f,
 		(input.isButtonHeld(platform::Button::Down) | input.isButtonHeld(platform::Button::F)) ? 1.0f : 0.0f,
-		(input.isButtonHeld(platform::Button::Right) | input.isButtonHeld(platform::Button::K)) ? 1.0f : 0.0f,
 		(input.isButtonHeld(platform::Button::Up) | input.isButtonHeld(platform::Button::J)) ? 1.0f : 0.0f,
+		(input.isButtonHeld(platform::Button::Right) | input.isButtonHeld(platform::Button::K)) ? 1.0f : 0.0f,
 	};
 
 	std::cout << "Inputs: " << inputs.x << ", " << inputs.y << ", " << inputs.z << ", " << inputs.w << std::endl;	
@@ -98,35 +94,35 @@ bool gameLogic(float deltaTime, platform::Input &input)
 #pragma region  render hit circles
 		if (inputs.x == 1)
 		{
-			renderer.renderRectangle(left, circleHit);
+			renderer.renderRectangle(left, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(0, 0));
 		}
 		else
 		{
-			renderer.renderRectangle(left, circleNoHit);
+			renderer.renderRectangle(left, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(1, 0));
 		}
 		if (inputs.y == 1)
 		{
-			renderer.renderRectangle(right, circleHit);
+			renderer.renderRectangle(down, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(0, 0));
 		}
 		else
 		{
-			renderer.renderRectangle(right, circleNoHit);
+			renderer.renderRectangle(down, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(1, 0));
 		}
 		if (inputs.z == 1)
 		{
-			renderer.renderRectangle(up, circleHit);
+			renderer.renderRectangle(up, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(0, 0));
 		}
 		else
 		{
-			renderer.renderRectangle(up, circleNoHit);
+			renderer.renderRectangle(up, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(1, 0));
 		}
 		if (inputs.w == 1)
 		{
-			renderer.renderRectangle(down, circleHit);
+			renderer.renderRectangle(right, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(0, 0));
 		}
 		else
 		{
-			renderer.renderRectangle(down, circleNoHit);
+			renderer.renderRectangle(right, targetCirclesTexture, Colors_White, {}, 0.f, targetCirclesAtlas.get(1, 0));
 		}
 #pragma endregion
 		
