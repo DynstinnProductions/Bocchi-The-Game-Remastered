@@ -19,7 +19,7 @@ c) I got nothing better to do 9 days before my exams
   
   [MY ITCH.IO PAGE!!](https://c-shell-games.itch.io/)
   
-  [MY YOUT](https://www.youtube.com/@dynstinn)
+  [MY YOUTUBE CHANNEL](https://www.youtube.com/@dynstinn)
 
 ---
 
