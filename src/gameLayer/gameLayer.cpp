@@ -13,12 +13,24 @@
 #include <IconsForkAwesome.h>
 #include <imguiTools.h>
 #include <logs.h>
+#include <glui/glui.h>
+#include <hitRender.h>
+#include <raudio.h>
 
 struct GameData
 {
 	glm::vec2 rectPos = {100,100};
 
 }gameData;
+
+constexpr float hitCirclesSize = 250.f;
+constexpr float hitCirclesOffsetInit = 0.65f; // the initial distance form the left for the hit circles
+constexpr float hitCirclesOffset = 0.08f; // the distance between the hit circles
+
+gl2d::Texture circleHit;
+gl2d::Texture circleNoHit;
+gl2d::Texture targetCircles;
+gl2d::TextureAtlasPadding hitCirclesAtlas;
 
 gl2d::Renderer2D renderer;
 
@@ -30,6 +42,11 @@ bool initGame()
 
 	//loading the saved data. Loading an entire structure like this makes savind game data very easy.
 	platform::readEntireFile(RESOURCES_PATH "gameData.data", &gameData, sizeof(GameData));
+
+	targetCircles.loadFromFileWithPixelPadding(RESOURCES_PATH "game resc/stiched/hit circle-stitched.png", 500, false);
+	circleHit.loadFromFile(RESOURCES_PATH "game resc/circleHit.png", false);
+	circleNoHit.loadFromFile(RESOURCES_PATH "game resc/circleNoHit.png", false);
+	hitCirclesAtlas = gl2d::TextureAtlasPadding(2, 1,targetCircles.GetSize().x, targetCircles.GetSize().y);
 
 	platform::log("Init");
 
@@ -56,50 +73,78 @@ bool gameLogic(float deltaTime, platform::Input &input)
 	renderer.updateWindowMetrics(w, h);
 #pragma endregion
 
-	//you can also do platform::isButtonHeld(platform::Button::Left)
+	glm::vec4 inputs = {
+		(input.isButtonHeld(platform::Button::Left) | input.isButtonHeld(platform::Button::D)) ? 1.0f : 0.0f,
+		(input.isButtonHeld(platform::Button::Down) | input.isButtonHeld(platform::Button::F)) ? 1.0f : 0.0f,
+		(input.isButtonHeld(platform::Button::Right) | input.isButtonHeld(platform::Button::K)) ? 1.0f : 0.0f,
+		(input.isButtonHeld(platform::Button::Up) | input.isButtonHeld(platform::Button::J)) ? 1.0f : 0.0f,
+	};
 
-	if (input.isButtonHeld(platform::Button::Left))
+	std::cout << "Inputs: " << inputs.x << ", " << inputs.y << ", " << inputs.z << ", " << inputs.w << std::endl;	
+
+#pragma region render UI
+
+#pragma region UI
+
+	renderer.pushCamera();
 	{
-		gameData.rectPos.x -= deltaTime * 100;
-	}
-	if (input.isButtonHeld(platform::Button::Right))
-	{
-		gameData.rectPos.x += deltaTime * 100;
-	}
-	if (input.isButtonHeld(platform::Button::Up))
-	{
-		gameData.rectPos.y -= deltaTime * 100;
-	}
-	if (input.isButtonHeld(platform::Button::Down))
-	{
-		gameData.rectPos.y += deltaTime * 100;
+		glui::Frame f({ 0,0,w,h });
+		
+		glui::Box left = glui::Box().xLeftPerc(hitCirclesOffsetInit).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+		glui::Box down = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+		glui::Box up = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset*2).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+		glui::Box right = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset*3).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+
+#pragma region  render hit circles
+		if (inputs.x == 1)
+		{
+			renderer.renderRectangle(left, circleHit);
+		}
+		else
+		{
+			renderer.renderRectangle(left, circleNoHit);
+		}
+		if (inputs.y == 1)
+		{
+			renderer.renderRectangle(right, circleHit);
+		}
+		else
+		{
+			renderer.renderRectangle(right, circleNoHit);
+		}
+		if (inputs.z == 1)
+		{
+			renderer.renderRectangle(up, circleHit);
+		}
+		else
+		{
+			renderer.renderRectangle(up, circleNoHit);
+		}
+		if (inputs.w == 1)
+		{
+			renderer.renderRectangle(down, circleHit);
+		}
+		else
+		{
+			renderer.renderRectangle(down, circleNoHit);
+		}
+#pragma endregion
+		
 	}
 
-	gameData.rectPos = glm::clamp(gameData.rectPos, glm::vec2{0,0}, glm::vec2{w - 100,h - 100});
-	renderer.renderRectangle({gameData.rectPos, 100, 100}, Colors_Blue);
+#pragma endregion
 
 	renderer.flush();
 
 
 	//ImGui::ShowDemoWindow();
 	ImGui::PushMakeWindowNotTransparent();
-	ImGui::Begin("Test Imgui");
+	ImGui::Begin("Debug: ");
 
-	ImGui::DragFloat2("Positions", &gameData.rectPos[0]);
-
-	ImGui::Text("Emoji moment: " ICON_FK_AMBULANCE);
-
-	ImGui::helpMarker("test");
-
-	ImGui::addErrorSymbol();
-	ImGui::addWarningSymbol();
-
-	ImGui::BeginChildFrameColoured(1, Colors_Gray, {100,100}, 0);
-
-	ImGui::Text("Test");
-
-	ImGui::EndChildFrame();
-
+	ImGui::Text("Inputs: %.1f", inputs.x);
+	ImGui::Text("Inputs: %.1f", inputs.y);
+	ImGui::Text("Inputs: %.1f", inputs.z);
+	ImGui::Text("Inputs: %.1f", inputs.w);
 
 	ImGui::PopMakeWindowNotTransparent();
 	ImGui::End();
