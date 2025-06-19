@@ -14,7 +14,8 @@
 #include <imguiTools.h>
 #include <logs.h>
 #include <glui/glui.h>
-#include <hitRender.h>
+#include <target.h>
+#include <targetInit.h>
 #include <raudio.h>
 
 struct GameData
@@ -85,11 +86,21 @@ bool gameLogic(float deltaTime, platform::Input &input)
 	renderer.pushCamera();
 	{
 		glui::Frame f({ 0,0,w,h });
-		
+
+		glui::Box leftSpawn = glui::Box().xLeftPerc(hitCirclesOffsetInit).yTopPerc(-0.05f).xDimensionPercentage(0.08f).yAspectRatio(1);
+		glui::Box downSpawn = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset).yTopPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+		glui::Box upSpawn = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset * 2).yTopPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+		glui::Box rightSpawn = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset * 3).yTopPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+				
 		glui::Box left = glui::Box().xLeftPerc(hitCirclesOffsetInit).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
 		glui::Box down = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
 		glui::Box up = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset*2).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
 		glui::Box right = glui::Box().xLeftPerc(hitCirclesOffsetInit + hitCirclesOffset*3).yBottomPerc(-0.05).xDimensionPercentage(0.08).yAspectRatio(1);
+
+		renderTarget(renderer, leftSpawn, 500, targetCirclesTexture, targetCirclesAtlas.get(0, 0));
+		renderTarget(renderer, downSpawn, 500, targetCirclesTexture, targetCirclesAtlas.get(0, 0));
+		renderTarget(renderer, upSpawn, 500, targetCirclesTexture, targetCirclesAtlas.get(0, 0));
+		renderTarget(renderer, rightSpawn, 500, targetCirclesTexture, targetCirclesAtlas.get(0, 0));
 
 #pragma region  render hit circles
 		if (inputs.x == 1)
