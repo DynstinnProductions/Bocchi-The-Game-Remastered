@@ -39,7 +39,7 @@ Then, from this dropdown select mygame.exe
 
 <img src="https://raw.githubusercontent.com/meemknight/photos/master/llge3.gif" width="200">
 
-<kbd>Ctrl + F5</kbd> to build (<kbd>F5</kbd> oppens the debugger, you usually want to press <kbd>Ctrl + F5</kbd> because it oppens faster like this.
+<kbd>Ctrl + F5</kbd> to build (<kbd>F5</kbd> opens the debugger, you usually want to press <kbd>Ctrl + F5</kbd> because it opens faster like this.
 
 [THE C++ OPENGL FRAMEWORK I USE:](https://github.com/meemknight/gl2d)
 
